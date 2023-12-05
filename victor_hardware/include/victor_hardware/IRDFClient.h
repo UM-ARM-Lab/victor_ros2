@@ -28,7 +28,7 @@
 #include <vector>
 #include <fstream>
 #include <chrono>
-
+#include <span>
 
 
 #define WORLD_DOF 6
@@ -104,16 +104,16 @@ public:
     /**
      * @brief set robot status with target joint position data
      */
-    void setTargetJointPosition(std::vector<double> target_joint_position);
+    void setTargetJointPosition(std::span<double> target_joint_position);
     /**
      * @brief set robot status with target joint torque data
      */
-    void setTargetJointTorque(std::vector<double> target_joint_torque);
+    void setTargetJointTorque(std::span<double> target_joint_torque);
 
-    void getRobotJointPosition(std::vector<double>& jp);
-    void getRobotJointVelocity(std::vector<double>& jv);
-    void getRobotJointTorque(std::vector<double>& jt);
-    void getRobotJointExternalTorque(std::vector<double>& jet);
+    void getRobotJointPosition(std::span<double> jp);
+    void getRobotJointVelocity(std::span<double> jv);
+    void getRobotJointTorque(std::span<double> jt);
+    void getRobotJointExternalTorque(std::span<double> jet);
 
     ESessionState getCurrentControllerState(){return _currentState;}
 

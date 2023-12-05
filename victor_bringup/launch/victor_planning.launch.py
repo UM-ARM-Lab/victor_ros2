@@ -26,7 +26,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             'description_package',
-            default_value='iiwa_description',
+            default_value='victor_description',
             description='Description package with robot URDF/xacro files. Usually the argument \
                          is not set, it enables use of a custom description.',
         )
@@ -34,7 +34,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             'description_file',
-            default_value='iiwa.config.xacro',
+            default_value='victor.urdf.xacro',
             description='URDF/XACRO description file with the robot.',
         )
     )
@@ -93,7 +93,7 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name='xacro')]),
             ' ',
             PathJoinSubstitution(
-                [FindPackageShare(description_package), 'config', description_file]
+                [FindPackageShare(description_package), 'urdf', description_file]
             ),
             ' ',
             'prefix:=',
@@ -118,11 +118,11 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution(
-                [FindPackageShare(description_package), "srdf", "iiwa.srdf.xacro"]
+                [FindPackageShare(description_package), "srdf", "victor.srdf.xacro"]
             ),
             " ",
             "name:=",
-            "iiwa",
+            "victor",
             " ",
             "prefix:=",
             prefix,
@@ -138,12 +138,12 @@ def generate_launch_description():
 
     # Get planning parameters
     robot_description_planning_joint_limits = PathJoinSubstitution([
-            FindPackageShare(description_package), "moveit2", "iiwa_joint_limits.yaml",
+            FindPackageShare(description_package), "moveit2", "victor_joint_limits.yaml",
         ]
     )
 
     robot_description_planning_cartesian_limits = PathJoinSubstitution([
-            FindPackageShare(description_package), "moveit2", "iiwa_cartesian_limits.yaml",
+            FindPackageShare(description_package), "moveit2", "victor_cartesian_limits.yaml",
         ]
     )
 
@@ -168,7 +168,7 @@ def generate_launch_description():
 
     moveit_controllers = PathJoinSubstitution(
         [FindPackageShare(description_package),
-            "moveit2", "iiwa_moveit_controller_config.yaml"]
+            "moveit2", "victor_moveit_controller_config.yaml"]
     )
 
     trajectory_execution = {
@@ -207,7 +207,7 @@ def generate_launch_description():
     )
 
     rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare(description_package), 'rviz', 'iiwa.rviz']
+        [FindPackageShare(description_package), 'rviz', 'victor.rviz']
     )
 
     rviz_node = Node(

@@ -26,7 +26,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             'description_package',
-            default_value='iiwa_description',
+            default_value='victor_description',
             description='Description package with robot URDF/xacro files. Usually the argument \
                          is not set, it enables use of a custom description.',
         )
@@ -34,7 +34,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             'description_file',
-            default_value='iiwa.config.xacro',
+            default_value='victor.config.xacro',
             description='URDF/XACRO description file with the robot.',
         )
     )
@@ -102,11 +102,11 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution(
-                [FindPackageShare(description_package), "srdf", "iiwa.srdf.xacro"]
+                [FindPackageShare(description_package), "srdf", "victor.srdf.xacro"]
             ),
             " ",
             "name:=",
-            "iiwa",
+            "victor",
             " ",
             "prefix:=",
             prefix,
@@ -124,12 +124,12 @@ def generate_launch_description():
     servo_params = PathJoinSubstitution([
             FindPackageShare(description_package),
             'moveit2',
-            'iiwa_moveit2_servo_config.yaml',
+            'victor_moveit2_servo_config.yaml',
         ]
     )
 
     servo_node = Node(
-        package='iiwa_moveit2',
+        package='victor_moveit2',
         executable='servo_node',
         namespace=namespace,
         output='screen',

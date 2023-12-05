@@ -28,7 +28,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             'runtime_config_package',
-            default_value='iiwa_description',
+            default_value='victor_description',
             description='Package with the controller\'s configuration in "config" folder. \
                          Usually the argument is not set, it enables use of a custom setup.',
         )
@@ -36,14 +36,14 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             'controllers_file',
-            default_value='iiwa_controllers.yaml',
+            default_value='victor_controllers.yaml',
             description='YAML file with the controllers configuration.',
         )
     )
     declared_arguments.append(
         DeclareLaunchArgument(
             'description_package',
-            default_value='iiwa_description',
+            default_value='victor_description',
             description='Description package with robot URDF/xacro files. Usually the argument \
                          is not set, it enables use of a custom description.',
         )
@@ -51,7 +51,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             'description_file',
-            default_value='iiwa.config.xacro',
+            default_value='victor.urdf.xacro',
             description='URDF/XACRO description file with the robot.',
         )
     )
@@ -105,7 +105,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             'robot_controller',
-            default_value='iiwa_arm_controller',
+            default_value='victor_arm_controller',
             description='Robot controller to start.',
         )
     )
@@ -177,7 +177,7 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name='xacro')]),
             ' ',
             PathJoinSubstitution(
-                [FindPackageShare(description_package), 'config', description_file]
+                [FindPackageShare(description_package), 'urdf', description_file]
             ),
             ' ',
             'prefix:=',
@@ -221,11 +221,11 @@ def generate_launch_description():
     robot_description = {'robot_description': robot_description_content}
 
     # Running with Moveit2 planning
-    iiwa_planning_launch = IncludeLaunchDescription(
+    victor_planning_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
-            FindPackageShare('iiwa_bringup'),
+            FindPackageShare('victor_bringup'),
             '/launch',
-            '/iiwa_planning.launch.py'
+            '/victor_planning.launch.py'
         ]),
         launch_arguments={
             'description_package': description_package,
@@ -240,11 +240,11 @@ def generate_launch_description():
     )
 
     # Running with Moveit2 servoing
-    iiwa_servoing_launch = IncludeLaunchDescription(
+    victor_servoing_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
-            FindPackageShare('iiwa_bringup'),
+            FindPackageShare('victor_bringup'),
             '/launch',
-            '/iiwa_servoing.launch.py'
+            '/victor_servoing.launch.py'
         ]),
         launch_arguments={
             'description_package': description_package,
@@ -263,8 +263,9 @@ def generate_launch_description():
             controllers_file,
         ]
     )
+
     rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare(description_package), 'rviz', 'iiwa.rviz']
+        [FindPackageShare(description_package), 'rviz', 'victor.rviz']
     )
 
     control_node = Node(
@@ -293,7 +294,7 @@ def generate_launch_description():
         ],
         condition=UnlessCondition(use_planning),
     )
-    iiwa_simulation_world = PathJoinSubstitution(
+    victor_simulation_world = PathJoinSubstitution(
         [FindPackageShare(description_package),
             'gazebo/worlds', 'empty.world']
     )
@@ -305,14 +306,14 @@ def generate_launch_description():
                     'launch', 'gazebo.launch.py']
             )]
         ),
-        launch_arguments={'verbose': 'false', 'world': iiwa_simulation_world}.items(),
+        launch_arguments={'verbose': 'false', 'world': victor_simulation_world}.items(),
         condition=IfCondition(use_sim),
     )
 
     spawn_entity = Node(
         package='gazebo_ros',
         executable='spawn_entity.py',
-        arguments=['-topic', [namespace, 'robot_description'], '-entity', [namespace, 'iiwa14']],
+        arguments=['-topic', [namespace, 'robot_description'], '-entity', [namespace, 'victor14']],
         output='screen',
         condition=IfCondition(use_sim),
     )
@@ -376,8 +377,8 @@ def generate_launch_description():
     nodes = [
         gazebo,
         control_node,
-        iiwa_planning_launch,
-        iiwa_servoing_launch,
+        victor_planning_launch,
+        victor_servoing_launch,
         spawn_entity,
         robot_state_pub_node,
         delay_joint_state_broadcaster_spawner_after_control_node,

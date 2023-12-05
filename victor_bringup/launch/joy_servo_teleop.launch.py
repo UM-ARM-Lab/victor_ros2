@@ -23,11 +23,11 @@ from launch_ros.descriptions import ComposableNode
 def generate_launch_description():
     # Launch the main launcher with servo
 
-    iiwa_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/iiwa.launch.py']),
+    victor_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/victor.launch.py']),
         launch_arguments={
             'command_interface': 'position',
-            'robot_controller': 'iiwa_arm_controller',
+            'robot_controller': 'victor_arm_controller',
             'use_servoing': 'true',
         }.items(),
     )
@@ -40,8 +40,8 @@ def generate_launch_description():
         executable='component_container',
         composable_node_descriptions=[
             ComposableNode(
-                package='iiwa_moveit2',
-                plugin='iiwa_servo::JoyToServoPub',
+                package='victor_moveit2',
+                plugin='victor_servo::JoyToServoPub',
                 name='controller_to_servo_node',
                 extra_arguments=[{'use_intra_process_comms': True}],
             ),
@@ -55,4 +55,4 @@ def generate_launch_description():
         output='screen',
     )
 
-    return LaunchDescription([container, iiwa_launch, ])
+    return LaunchDescription([container, victor_launch, ])

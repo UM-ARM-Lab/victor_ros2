@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef IIWA_HARDWARE__IIWA_HI_FRI
-#define IIWA_HARDWARE__IIWA_HI_FRI
+#ifndef VICTOR_HARDWARE__VICTOR_HI_FRI
+#define VICTOR_HARDWARE__VICTOR_HI_FRI
 
 #include <memory>
 #include <string>
@@ -26,47 +26,48 @@
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 #include "rclcpp/macros.hpp"
-#include "iiwa_hardware/visibility_control.h"
+#include "victor_hardware/visibility_control.h"
 
-#include "iiwa_hardware/IRDFClient.h"
+#include "victor_hardware/IRDFClient.h"
 
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
-namespace iiwa_hardware
+namespace victor_hardware
 {
-class IiwaFRIHardwareInterface : public hardware_interface::SystemInterface
+class VictorFRIHardwareInterface : public hardware_interface::SystemInterface
 {
 public:
-  RCLCPP_SHARED_PTR_DEFINITIONS(IiwaFRIHardwareInterface);
+  RCLCPP_SHARED_PTR_DEFINITIONS(VictorFRIHardwareInterface);
 
-  IIWA_HARDWARE_PUBLIC
+  VICTOR_HARDWARE_PUBLIC
   CallbackReturn on_init(const hardware_interface::HardwareInfo & info) override;
 
-  IIWA_HARDWARE_PUBLIC
+  VICTOR_HARDWARE_PUBLIC
   std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
 
-  IIWA_HARDWARE_PUBLIC
+  VICTOR_HARDWARE_PUBLIC
   std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
 
-  IIWA_HARDWARE_PUBLIC
+  VICTOR_HARDWARE_PUBLIC
   CallbackReturn on_activate(const rclcpp_lifecycle::State & previous_state) override;
 
-  IIWA_HARDWARE_PUBLIC
+  VICTOR_HARDWARE_PUBLIC
   CallbackReturn on_deactivate(const rclcpp_lifecycle::State & previous_state) override;
 
-  IIWA_HARDWARE_PUBLIC
+  VICTOR_HARDWARE_PUBLIC
   hardware_interface::return_type read(
     const rclcpp::Time & time,
     const rclcpp::Duration & period) override;
 
-  IIWA_HARDWARE_PUBLIC
+  VICTOR_HARDWARE_PUBLIC
   hardware_interface::return_type write(
     const rclcpp::Time & time,
     const rclcpp::Duration & period) override;
 
 private:
   // Communication
-  KUKA::FRI::IRDFClient robotClient_;
+  KUKA::FRI::IRDFClient leftRobotClient_;
+  KUKA::FRI::IRDFClient rightRobotClient_;
 
   // Store the command for the simulated robot
   std::string hw_command_mode_;
@@ -80,6 +81,6 @@ private:
 
 };
 
-}  // namespace iiwa_hardware
+}  // namespace victor_hardware
 
-#endif  // IIWA_HARDWARE__IIWA_HI_FRI
+#endif  // VICTOR_HARDWARE__VICTOR_HI_FRI

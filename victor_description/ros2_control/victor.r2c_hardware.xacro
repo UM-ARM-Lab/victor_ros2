@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+      <xacro:include filename="$(find victor_description)/ros2_control/iiwa.r2c_hardware.xacro"/>
+
+    <xacro:macro name="victor_r2c_hardware" params="name command_interface left_robot_ip left_robot_port right_robot_ip right_robot_port use_sim:=^|false use_fake_hardware:=^|false">
+        <ros2_control name="${name}" type="system">
+
+            <xacro:if value="${use_sim}">
+                <hardware>
+                    <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+                </hardware>
+            </xacro:if>
+            <xacro:unless value="${use_sim}">
+                <hardware>
+                <xacro:if value="${use_fake_hardware}">
+                    <plugin>fake_components/GenericSystem</plugin>
+                        <param name="state_following_offset">0.0</param>
+                </xacro:if>
+                <xacro:unless value="${use_fake_hardware}">
+                    <plugin>victor_hardware/VictorFRIHardwareInterface</plugin>
+                    <param name="left_robot_ip">${left_robot_ip}</param>
+                    <param name="left_robot_port">${left_robot_port}</param>
+                    <param name="right_robot_ip">${right_robot_ip}</param>
+                    <param name="right_robot_port">${right_robot_port}</param>
+                    <param name="velocity_filter_cutoff_freq">40</param>
+                    <param name="torque_filter_cutoff_freq">40</param>
+                </xacro:unless>
+                </hardware>
+            </xacro:unless>
+            
+            <xacro:iiwa_r2c_hardware prefix="left_" command_interface="${command_interface}">
+            </xacro:iiwa_r2c_hardware>
+            
+            <xacro:iiwa_r2c_hardware prefix="right_" command_interface="${command_interface}">
+            </xacro:iiwa_r2c_hardware>
+        </ros2_control>
+
+    </xacro:macro>
+
+</robot>

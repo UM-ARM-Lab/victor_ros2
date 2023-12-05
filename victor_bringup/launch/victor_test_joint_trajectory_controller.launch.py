@@ -23,7 +23,7 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
 
     position_goals = PathJoinSubstitution(
-        [FindPackageShare('iiwa_bringup'), 'config', 'test_trajectory_config.yaml']
+        [FindPackageShare('victor_bringup'), 'config', 'test_trajectory_config.yaml']
     )
 
     return LaunchDescription(

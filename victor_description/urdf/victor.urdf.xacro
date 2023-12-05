@@ -2,11 +2,19 @@
 <robot name="victor" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
   <xacro:arg name="robot_name" default="victor"/>
+  <xacro:arg name="left_robot_ip" default="10.10.10.12" />
+  <xacro:arg name="left_robot_port" default="30200" />
+  <xacro:arg name="right_robot_ip" default="10.10.10.11" />
+  <xacro:arg name="right_robot_port" default="30200" />
+  <xacro:arg name="command_interface" default="position" />
+  <xacro:arg name="use_fake_hardware" default="false" />
+  <xacro:arg name="controllers_file" default="iiwa_controllers.yaml" />
 
   <xacro:include filename="$(find victor_description)/urdf/baxter_pedestal.xacro"/>
   <xacro:include filename="$(find victor_description)/urdf/victor_torso.xacro"/>
   <xacro:include filename="$(find victor_description)/urdf/iiwa.urdf.xacro"/>
   <xacro:include filename="$(find victor_description)/urdf/materials.xacro"/>
+  <xacro:include filename="$(find victor_description)/ros2_control/victor.r2c_hardware.xacro"/>
   
   <xacro:baxter_pedestal robot_name="$(arg robot_name)"/>
   <xacro:victor_torso robot_name="$(arg robot_name)" parent="$(arg robot_name)_base_plate_mount"/>
@@ -33,5 +41,13 @@
   </joint>
   <link name="$(arg robot_name)_right_arm_world_frame_kuka">
   </link>
+
+  <xacro:victor_r2c_hardware
+      name="victor"
+      command_interface="$(arg command_interface)"
+      left_robot_ip="$(arg left_robot_ip)" left_robot_port="$(arg left_robot_port)"
+      right_robot_ip="$(arg right_robot_ip)" right_robot_port="$(arg right_robot_port)"
+      use_fake_hardware="$(arg use_fake_hardware)"
+      />
   
 </robot>

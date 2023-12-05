@@ -19,38 +19,38 @@
  * library cannot have, but the consuming code must have inorder to link.
  */
 
-#ifndef IIWA_HARDWARE__VISIBILITY_CONTROL_H_
-#define IIWA_HARDWARE__VISIBILITY_CONTROL_H_
+#ifndef VICTOR_HARDWARE__VISIBILITY_CONTROL_H_
+#define VICTOR_HARDWARE__VISIBILITY_CONTROL_H_
 
 // This logic was borrowed (then namespaced) from the examples on the gcc wiki:
 //     https://gcc.gnu.org/wiki/Visibility
 
 #if defined _WIN32 || defined __CYGWIN__
 #ifdef __GNUC__
-#define IIWA_HARDWARE_EXPORT __attribute__((dllexport))
-#define IIWA_HARDWARE_IMPORT __attribute__((dllimport))
+#define VICTOR_HARDWARE_EXPORT __attribute__((dllexport))
+#define VICTOR_HARDWARE_IMPORT __attribute__((dllimport))
 #else
-#define IIWA_HARDWARE_EXPORT __declspec(dllexport)
-#define IIWA_HARDWARE_IMPORT __declspec(dllimport)
+#define VICTOR_HARDWARE_EXPORT __declspec(dllexport)
+#define VICTOR_HARDWARE_IMPORT __declspec(dllimport)
 #endif
-#ifdef IIWA_HARDWARE_BUILDING_DLL
-#define IIWA_HARDWARE_PUBLIC IIWA_HARDWARE_EXPORT
+#ifdef VICTOR_HARDWARE_BUILDING_DLL
+#define VICTOR_HARDWARE_PUBLIC VICTOR_HARDWARE_EXPORT
 #else
-#define IIWA_HARDWARE_PUBLIC IIWA_HARDWARE_IMPORT
+#define VICTOR_HARDWARE_PUBLIC VICTOR_HARDWARE_IMPORT
 #endif
-#define IIWA_HARDWARE_PUBLIC_TYPE IIWA_HARDWARE_PUBLIC
-#define IIWA_HARDWARE_LOCAL
+#define VICTOR_HARDWARE_PUBLIC_TYPE VICTOR_HARDWARE_PUBLIC
+#define VICTOR_HARDWARE_LOCAL
 #else
-#define IIWA_HARDWARE_EXPORT __attribute__((visibility("default")))
-#define IIWA_HARDWARE_IMPORT
+#define VICTOR_HARDWARE_EXPORT __attribute__((visibility("default")))
+#define VICTOR_HARDWARE_IMPORT
 #if __GNUC__ >= 4
-#define IIWA_HARDWARE_PUBLIC __attribute__((visibility("default")))
-#define IIWA_HARDWARE_LOCAL __attribute__((visibility("hidden")))
+#define VICTOR_HARDWARE_PUBLIC __attribute__((visibility("default")))
+#define VICTOR_HARDWARE_LOCAL __attribute__((visibility("hidden")))
 #else
-#define IIWA_HARDWARE_PUBLIC
-#define IIWA_HARDWARE_LOCAL
+#define VICTOR_HARDWARE_PUBLIC
+#define VICTOR_HARDWARE_LOCAL
 #endif
-#define IIWA_HARDWARE_PUBLIC_TYPE
+#define VICTOR_HARDWARE_PUBLIC_TYPE
 #endif
 
-#endif  // IIWA_HARDWARE__VISIBILITY_CONTROL_H_
+#endif  // VICTOR_HARDWARE__VISIBILITY_CONTROL_H_

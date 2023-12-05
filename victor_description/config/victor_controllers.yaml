@@ -25,13 +25,20 @@ victor_arm_controller:
       - position
       - velocity
     joints:
-      - joint_a1
-      - joint_a2
-      - joint_a3
-      - joint_a4
-      - joint_a5
-      - joint_a6
-      - joint_a7
+      - left_joint_a1
+      - left_joint_a2
+      - left_joint_a3
+      - left_joint_a4
+      - left_joint_a5
+      - left_joint_a6
+      - left_joint_a7
+      - right_joint_a1
+      - right_joint_a2
+      - right_joint_a3
+      - right_joint_a4
+      - right_joint_a5
+      - right_joint_a6
+      - right_joint_a7
 
     state_publish_rate: 200.0 # Defaults to 50
     action_monitor_rate: 20.0 # Defaults to 20
@@ -39,24 +46,38 @@ victor_arm_controller:
 velocity_controller:
   ros__parameters:
     joints:
-      - joint_a1
-      - joint_a2
-      - joint_a3
-      - joint_a4
-      - joint_a5
-      - joint_a6
-      - joint_a7
+      - left_joint_a1
+      - left_joint_a2
+      - left_joint_a3
+      - left_joint_a4
+      - left_joint_a5
+      - left_joint_a6
+      - left_joint_a7
+      - right_joint_a1
+      - right_joint_a2
+      - right_joint_a3
+      - right_joint_a4
+      - right_joint_a5
+      - right_joint_a6
+      - right_joint_a7
 
 impedance_controller:
   ros__parameters:
     joints:
-      - joint_a1
-      - joint_a2
-      - joint_a3
-      - joint_a4
-      - joint_a5
-      - joint_a6
-      - joint_a7
+      - left_joint_a1
+      - left_joint_a2
+      - left_joint_a3
+      - left_joint_a4
+      - left_joint_a5
+      - left_joint_a6
+      - left_joint_a7
+      - right_joint_a1
+      - right_joint_a2
+      - right_joint_a3
+      - right_joint_a4
+      - right_joint_a5
+      - right_joint_a6
+      - right_joint_a7
     stiffness: [50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0]
     damping: [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0]
 

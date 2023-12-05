@@ -25,7 +25,7 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name='xacro')]),
             ' ',
             PathJoinSubstitution(
-                [FindPackageShare('iiwa_description'), 'config', 'iiwa.config.xacro']
+                [FindPackageShare('victor_description'), 'config', 'victor.config.xacro']
             ),
         ]
     )
@@ -38,11 +38,11 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name='xacro')]),
             ' ',
             PathJoinSubstitution(
-                [FindPackageShare('iiwa_description'), 'srdf', 'iiwa.srdf.xacro']
+                [FindPackageShare('victor_description'), 'srdf', 'victor.srdf.xacro']
             ),
             ' ',
             'name:=',
-            'iiwa',
+            'victor',
         ]
     )
 
@@ -52,39 +52,39 @@ def generate_launch_description():
 
     # Get parameters for the Pose Tracking node
     pose_tracking_params = PathJoinSubstitution([
-            FindPackageShare('iiwa_description'),
+            FindPackageShare('victor_description'),
             'moveit2',
-            'iiwa_moveit2_pose_tracking_settings.yaml',
+            'victor_moveit2_pose_tracking_settings.yaml',
         ]
     )
 
     # Get parameters for the Servo node
     servo_params = PathJoinSubstitution([
-            FindPackageShare('iiwa_description'),
+            FindPackageShare('victor_description'),
             'moveit2',
-            'iiwa_moveit2_pose_tracking_config.yaml',
+            'victor_moveit2_pose_tracking_config.yaml',
         ]
     )
 
     kinematics_yaml = PathJoinSubstitution([
-            FindPackageShare('iiwa_description'),
+            FindPackageShare('victor_description'),
             'moveit2',
             'kinematics.yaml'
         ]
     )
 
     joint_limits_yaml = PathJoinSubstitution([
-            FindPackageShare('iiwa_description'),
+            FindPackageShare('victor_description'),
             'moveit2',
-            'iiwa_cartesian_limits.yaml',
+            'victor_cartesian_limits.yaml',
         ]
     )
 
     # RViz
     rviz_config_file = PathJoinSubstitution([
-            FindPackageShare('iiwa_description'),
+            FindPackageShare('victor_description'),
             'rviz',
-            'iiwa.rviz'
+            'victor.rviz'
         ]
     )
 
@@ -101,22 +101,22 @@ def generate_launch_description():
         package='robot_state_publisher',
         executable='robot_state_publisher',
         namespace='',
-        name='iiwa_state_publisher',
+        name='victor_state_publisher',
         output='screen',
         parameters=[robot_description],
     )
 
-    # A node to publish world -> iiwa_base transform
+    # A node to publish world -> victor_base transform
     static_tf = Node(
         package='tf2_ros',
         executable='static_transform_publisher',
         name='static_transform_publisher',
         output='log',
-        arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'world', 'iiwa_base'],
+        arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'world', 'victor_base'],
     )
 
     pose_tracking_node = Node(
-        package='iiwa_moveit2',
+        package='victor_moveit2',
         executable='pose_tracking_servo_node',
         name='pose_tracking_servo_node',
         output='screen',
@@ -133,9 +133,9 @@ def generate_launch_description():
     # ros2_control using FakeSystem as hardware
     ros2_controllers_path = PathJoinSubstitution(
         [
-            FindPackageShare('iiwa_description'),
+            FindPackageShare('victor_description'),
             'config',
-            'iiwa_controllers.yaml',
+            'victor_controllers.yaml',
         ]
     )
 
@@ -163,7 +163,7 @@ def generate_launch_description():
     robot_controller_spawner = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['iiwa_arm_controller', '--controller-manager', '/controller_manager'],
+        arguments=['victor_arm_controller', '--controller-manager', '/controller_manager'],
     )
 
     return LaunchDescription(
