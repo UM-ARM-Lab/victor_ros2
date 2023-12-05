@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg name)">
+
+  <xacro:arg name="name" default="victor"/>
+  <xacro:arg name="prefix" default="" />
+  <xacro:arg name="description_package" default="victor_description" />
+
+  <xacro:property name="description_package" value="$(arg description_package)"/>
+  <xacro:include filename="$(find ${description_package})/srdf/victor_macro.srdf.xacro"/>
+
+  <xacro:victor_srdf name="$(arg name)" prefix="$(arg prefix)"/>
+
+</robot>

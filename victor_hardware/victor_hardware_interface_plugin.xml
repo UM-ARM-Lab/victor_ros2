@@ -1,0 +1,19 @@
+<library path="victor_hardware">
+  <class name="victor_hardware/VictorDirectServoPositionHardwareInterface"
+         type="victor_hardware::VictorDirectServoPositionHardwareInterface"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ROS2 Control System Driver for the KUKA iiwa robot. This driver uses the
+      KUKA Sunrise.servoing Direct Servo controller.
+    </description>
+  </class>
+  <class name="victor_hardware/VictorFRIHardwareInterface"
+         type="victor_hardware::VictorFRIHardwareInterface"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ROS2 Control System Driver for the KUKA iiwa robot. This driver uses the
+      KUKA Fast Robot Interface control protocol. Position, Velocity and Effort
+      Interfaces are supported, but same for all joints.
+    </description>
+  </class>
+</library>

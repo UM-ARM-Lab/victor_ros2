@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="victor">
+
+  <xacro:include filename="$(find victor_description)/urdf/baxter_pedestal.xacro"/>
+  <xacro:baxter_pedestal robot_name="victor"/>
+
+  <xacro:include filename="$(find victor_description)/urdf/victor.urdf.xacro"/>
+  <xacro:include filename="$(find victor_description)/urdf/materials.xacro"/>
+  
+  <xacro:victor parent="victor_root" prefix="left_">
+    <origin xyz="0 0 0" rpy="1.57079632679 0 0"/>
+  </xacro:victor>
+
+  <xacro:victor parent="victor_root" prefix="right_">
+    <origin xyz="0 0 0" rpy="-1.57079632679 0 0"/>
+  </xacro:victor>
+
+  <robotiq...>
+
+
+</robot>

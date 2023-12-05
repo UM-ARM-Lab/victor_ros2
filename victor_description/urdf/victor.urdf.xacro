@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<robot name="victor" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="robot_name" default="victor"/>
+
+  <xacro:include filename="$(find victor_description)/urdf/baxter_pedestal.xacro"/>
+  <xacro:include filename="$(find victor_description)/urdf/victor_torso.xacro"/>
+  <xacro:include filename="$(find victor_description)/urdf/iiwa.urdf.xacro"/>
+  <xacro:include filename="$(find victor_description)/urdf/materials.xacro"/>
+  
+  <xacro:baxter_pedestal robot_name="$(arg robot_name)"/>
+  <xacro:victor_torso robot_name="$(arg robot_name)" parent="$(arg robot_name)_base_plate_mount"/>
+
+  <xacro:iiwa parent="$(arg robot_name)_left_arm_mount" prefix="left_">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:iiwa>
+
+  <joint name="$(arg robot_name)_joint_left_arm_world_frame_kuka" type="fixed">
+    <parent link="$(arg robot_name)_left_arm_mount"/>
+    <child link="$(arg robot_name)_left_arm_world_frame_kuka"/>
+    <origin xyz="0 0 0" rpy="1.57079632679 0 0"/>
+  </joint>
+  <link name="$(arg robot_name)_left_arm_world_frame_kuka">
+  </link>
+
+  <xacro:iiwa parent="$(arg robot_name)_right_arm_mount" prefix="right_">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:iiwa>
+  <joint name="$(arg robot_name)_joint_right_arm_world_frame_kuka" type="fixed">
+    <parent link="$(arg robot_name)_right_arm_mount"/>
+    <child link="$(arg robot_name)_right_arm_world_frame_kuka"/>
+    <origin xyz="0 0 0" rpy="-1.57079632679 0 0"/>
+  </joint>
+  <link name="$(arg robot_name)_right_arm_world_frame_kuka">
+  </link>
+  
+</robot>
