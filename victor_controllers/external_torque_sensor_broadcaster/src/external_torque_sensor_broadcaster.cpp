@@ -87,7 +87,7 @@ CallbackReturn ExternalTorqueSensorBroadcaster::on_configure(const rclcpp_lifecy
         std::make_unique<semantic_components::ExternalTorqueSensor>(semantic_components::ExternalTorqueSensor(
             interface_names_[0], interface_names_[1], interface_names_[2], interface_names_[3], interface_names_[4],
             interface_names_[5], interface_names_[6], interface_names_[7], interface_names_[8], interface_names_[9],
-            interface_names_[10], interface_names_[11], interface_names_[12], interface_names_[13], ));
+            interface_names_[10], interface_names_[11], interface_names_[12], interface_names_[13]));
   }
 
   try {
