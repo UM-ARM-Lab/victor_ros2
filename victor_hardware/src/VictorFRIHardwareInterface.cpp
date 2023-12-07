@@ -206,14 +206,14 @@ namespace victor_hardware
     }
 
     auto logger = rclcpp::get_logger("VictorFRIHardwareInterface");
-    RCLCPP_INFO(logger, "Connecting FRI:");
+    RCLCPP_INFO(logger, "===================================================================================");
+    RCLCPP_INFO(logger, "Waiting to connect to FRI, please start the iiwa_ros2 application on BOTH pendants!");
+    RCLCPP_INFO(logger, "===================================================================================");
     RCLCPP_INFO(logger, "Left: ip= %s port= %i", left_ip.c_str(), left_port);
     RCLCPP_INFO(logger, "Right: ip= %s port= %i", right_ip.c_str(), right_port);
 
     leftRobotClient_.connect(left_port, left_ip.c_str());
     rightRobotClient_.connect(right_port, right_ip.c_str());
-
-    RCLCPP_INFO(rclcpp::get_logger("VictorFRIHardwareInterface"), "System Successfully started!");
 
     return CallbackReturn::SUCCESS;
   }

@@ -132,13 +132,6 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            'initial_positions_file',
-            default_value='initial_positions.yaml',
-            description='Configuration file of robot initial positions for simulation.',
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
             'command_interface',
             default_value='position',
             description='Robot command interface [position|velocity|effort].',
@@ -180,41 +173,11 @@ def generate_launch_description():
                 [FindPackageShare(description_package), 'urdf', description_file]
             ),
             ' ',
-            'prefix:=',
-            prefix,
-            ' ',
-            'use_sim:=',
-            use_sim,
-            ' ',
             'use_fake_hardware:=',
             use_fake_hardware,
             ' ',
-            'robot_ip:=',
-            robot_ip,
-            ' ',
-            'robot_port:=',
-            robot_port,
-            ' ',
-            'initial_positions_file:=',
-            initial_positions_file,
-            ' ',
             'command_interface:=',
             command_interface,
-            ' ',
-            'base_frame_file:=',
-            base_frame_file,
-            ' ',
-            'description_package:=',
-            description_package,
-            ' ',
-            'runtime_config_package:=',
-            runtime_config_package,
-            ' ',
-            'controllers_file:=',
-            controllers_file,
-            ' ',
-            'namespace:=',
-            namespace,
         ]
     )
 

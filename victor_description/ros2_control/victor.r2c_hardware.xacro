@@ -34,6 +34,23 @@
             
             <xacro:iiwa_r2c_hardware prefix="right_" command_interface="${command_interface}">
             </xacro:iiwa_r2c_hardware>
+            
+            <sensor name="external_torque_sensor">
+                <state_interface name="external_torque.left_joint_a1" />
+                <state_interface name="external_torque.left_joint_a2" />
+                <state_interface name="external_torque.left_joint_a3" />
+                <state_interface name="external_torque.left_joint_a4" />
+                <state_interface name="external_torque.left_joint_a5" />
+                <state_interface name="external_torque.left_joint_a6" />
+                <state_interface name="external_torque.left_joint_a7" />
+                <state_interface name="external_torque.right_joint_a1" />
+                <state_interface name="external_torque.right_joint_a2" />
+                <state_interface name="external_torque.right_joint_a3" />
+                <state_interface name="external_torque.right_joint_a4" />
+                <state_interface name="external_torque.right_joint_a5" />
+                <state_interface name="external_torque.right_joint_a6" />
+                <state_interface name="external_torque.right_joint_a7" />
+	    </sensor>
         </ros2_control>
 
     </xacro:macro>

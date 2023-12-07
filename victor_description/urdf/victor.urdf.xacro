@@ -1,13 +1,15 @@
 <?xml version="1.0"?>
 <robot name="victor" xmlns:xacro="http://www.ros.org/wiki/xacro">
-
+  <!-- These can be overrided in the launch file -->
+  <xacro:arg name="command_interface" default="position" />
+  <xacro:arg name="use_fake_hardware" default="false" />
+  
+  <!-- These you probably don't want to change -->
   <xacro:arg name="robot_name" default="victor"/>
   <xacro:arg name="left_robot_ip" default="10.10.10.12" />
   <xacro:arg name="left_robot_port" default="30200" />
   <xacro:arg name="right_robot_ip" default="10.10.10.11" />
-  <xacro:arg name="right_robot_port" default="30200" />
-  <xacro:arg name="command_interface" default="position" />
-  <xacro:arg name="use_fake_hardware" default="false" />
+  <xacro:arg name="right_robot_port" default="30201" />
   <xacro:arg name="controllers_file" default="iiwa_controllers.yaml" />
 
   <xacro:include filename="$(find victor_description)/urdf/baxter_pedestal.xacro"/>
