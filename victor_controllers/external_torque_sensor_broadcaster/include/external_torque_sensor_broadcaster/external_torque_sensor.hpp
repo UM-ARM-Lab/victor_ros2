@@ -19,19 +19,15 @@
 #include <string>
 #include <vector>
 
-#include "std_msgs/msg/float64_multi_array.hpp"
 #include "hardware_interface/loaned_state_interface.hpp"
 #include "semantic_components/semantic_component_interface.hpp"
+#include "std_msgs/msg/float64_multi_array.hpp"
 
-namespace semantic_components
-{
-class ExternalTorqueSensor : public SemanticComponentInterface<std_msgs::msg::Float64MultiArray>
-{
-public:
+namespace semantic_components {
+class ExternalTorqueSensor : public SemanticComponentInterface<std_msgs::msg::Float64MultiArray> {
+ public:
   /// Constructor for iiwa ETS with 7 values
-  explicit ExternalTorqueSensor(const std::string & name)
-  : SemanticComponentInterface(name, 7)
-  {
+  explicit ExternalTorqueSensor(const std::string &name) : SemanticComponentInterface(name, 7) {
     // If ETS use standard names
     interface_names_.emplace_back(name_ + "/" + "external_torque.joint_a1");
     interface_names_.emplace_back(name_ + "/" + "external_torque.joint_a2");
@@ -50,21 +46,19 @@ public:
 
   /// Constructor for ETS with custom interface names.
 
-  ExternalTorqueSensor(
-    const std::string & interface_torque_a1, const std::string & interface_torque_a2,
-    const std::string & interface_torque_a3, const std::string & interface_torque_a4,
-    const std::string & interface_torque_a5, const std::string & interface_torque_a6,
-    const std::string & interface_torque_a7)
-  : SemanticComponentInterface("", 7)
-  {
-    auto check_and_add_interface = [this](const std::string & interface_name, const int index) {
-        if (!interface_name.empty()) {
-          interface_names_.emplace_back(interface_name);
-          existing_axes_[index] = true;
-        } else {
-          existing_axes_[index] = false;
-        }
-      };
+  ExternalTorqueSensor(const std::string &interface_torque_a1, const std::string &interface_torque_a2,
+                       const std::string &interface_torque_a3, const std::string &interface_torque_a4,
+                       const std::string &interface_torque_a5, const std::string &interface_torque_a6,
+                       const std::string &interface_torque_a7)
+      : SemanticComponentInterface("", 7) {
+    auto check_and_add_interface = [this](const std::string &interface_name, const int index) {
+      if (!interface_name.empty()) {
+        interface_names_.emplace_back(interface_name);
+        existing_axes_[index] = true;
+      } else {
+        existing_axes_[index] = false;
+      }
+    };
 
     check_and_add_interface(interface_torque_a1, 0);
     check_and_add_interface(interface_torque_a2, 1);
@@ -73,7 +67,6 @@ public:
     check_and_add_interface(interface_torque_a5, 4);
     check_and_add_interface(interface_torque_a6, 5);
     check_and_add_interface(interface_torque_a7, 6);
-
 
     // Set default force and torque values to NaN
     std::fill(torques_.begin(), torques_.end(), std::numeric_limits<double>::quiet_NaN());
@@ -87,8 +80,7 @@ public:
    *
    * \return array of size 7 with torque values.
    */
-  std::array<double, 7> get_torques()
-  {
+  std::array<double, 7> get_torques() {
     // find out how many force interfaces are being used
     // torque interfaces will be found from the next index onward
     auto torque_interface_counter = 0;
@@ -108,8 +100,7 @@ public:
    *   torque a1, ... , torque a7
    * \return Float64MultiArray message from values;
    */
-  bool get_values_as_message(std_msgs::msg::Float64MultiArray & message)
-  {
+  bool get_values_as_message(std_msgs::msg::Float64MultiArray &message) {
     // call get_troque() to update with the latest values
     get_torques();
 
@@ -120,7 +111,7 @@ public:
     return true;
   }
 
-protected:
+ protected:
   std::array<double, 7> torques_;
   std::array<bool, 7> existing_axes_;
 };
