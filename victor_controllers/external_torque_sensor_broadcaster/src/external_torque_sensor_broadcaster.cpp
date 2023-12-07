@@ -48,15 +48,22 @@ CallbackReturn ExternalTorqueSensorBroadcaster::on_init() {
 
 CallbackReturn ExternalTorqueSensorBroadcaster::on_configure(const rclcpp_lifecycle::State & /*previous_state*/) {
   sensor_name_ = get_node()->get_parameter("sensor_name").as_string();
-  interface_names_[0] = get_node()->get_parameter("interface_names.joint_a1").as_string();
-  interface_names_[1] = get_node()->get_parameter("interface_names.joint_a2").as_string();
-  interface_names_[2] = get_node()->get_parameter("interface_names.joint_a3").as_string();
-  interface_names_[3] = get_node()->get_parameter("interface_names.joint_a4").as_string();
-  interface_names_[4] = get_node()->get_parameter("interface_names.joint_a5").as_string();
-  interface_names_[5] = get_node()->get_parameter("interface_names.joint_a6").as_string();
-  interface_names_[6] = get_node()->get_parameter("interface_names.joint_a7").as_string();
+  interface_names_[0] = get_node()->get_parameter("interface_names.left_joint_a1").as_string();
+  interface_names_[1] = get_node()->get_parameter("interface_names.left_joint_a2").as_string();
+  interface_names_[2] = get_node()->get_parameter("interface_names.left_joint_a3").as_string();
+  interface_names_[3] = get_node()->get_parameter("interface_names.left_joint_a4").as_string();
+  interface_names_[4] = get_node()->get_parameter("interface_names.left_joint_a5").as_string();
+  interface_names_[5] = get_node()->get_parameter("interface_names.left_joint_a6").as_string();
+  interface_names_[6] = get_node()->get_parameter("interface_names.left_joint_a7").as_string();
+  interface_names_[7] = get_node()->get_parameter("interface_names.right_joint_a1").as_string();
+  interface_names_[8] = get_node()->get_parameter("interface_names.right_joint_a2").as_string();
+  interface_names_[9] = get_node()->get_parameter("interface_names.right_joint_a3").as_string();
+  interface_names_[10] = get_node()->get_parameter("interface_names.right_joint_a4").as_string();
+  interface_names_[11] = get_node()->get_parameter("interface_names.right_joint_a5").as_string();
+  interface_names_[12] = get_node()->get_parameter("interface_names.right_joint_a6").as_string();
+  interface_names_[13] = get_node()->get_parameter("interface_names.right_joint_a7").as_string();
 
-  const bool no_interface_names_defined = std::count(interface_names_.begin(), interface_names_.end(), "") == 7;
+  const bool no_interface_names_defined = std::count(interface_names_.begin(), interface_names_.end(), "") == 14;
 
   if (sensor_name_.empty() && no_interface_names_defined) {
     RCLCPP_ERROR(get_node()->get_logger(),
@@ -79,7 +86,8 @@ CallbackReturn ExternalTorqueSensorBroadcaster::on_configure(const rclcpp_lifecy
     external_torque_sensor_ =
         std::make_unique<semantic_components::ExternalTorqueSensor>(semantic_components::ExternalTorqueSensor(
             interface_names_[0], interface_names_[1], interface_names_[2], interface_names_[3], interface_names_[4],
-            interface_names_[5], interface_names_[6]));
+            interface_names_[5], interface_names_[6], interface_names_[7], interface_names_[8], interface_names_[9],
+            interface_names_[10], interface_names_[11], interface_names_[12], interface_names_[13], ));
   }
 
   try {

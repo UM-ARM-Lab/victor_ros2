@@ -58,7 +58,7 @@ class ExternalTorqueSensorBroadcaster : public controller_interface::ControllerI
 
  protected:
   std::string sensor_name_;
-  std::array<std::string, 7> interface_names_;
+  std::array<std::string, 14> interface_names_;
 
   std::unique_ptr<semantic_components::ExternalTorqueSensor> external_torque_sensor_;
 
