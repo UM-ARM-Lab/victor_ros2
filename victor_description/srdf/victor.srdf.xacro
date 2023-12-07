@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg name)">
+
+  <xacro:arg name="name" default="victor"/>
+  <xacro:arg name="description_package" default="victor_description" />
+
+  <xacro:property name="description_package" value="$(arg description_package)"/>
+  <xacro:include filename="$(find ${description_package})/srdf/iiwa_macro.srdf.xacro"/>
+
+  <xacro:iiwa_srdf prefix="left_"/>
+  <xacro:iiwa_srdf prefix="right_"/>
+
+  <group name="both_arms">
+    <group name="left_arm"/>
+    <group name="right_arm"/>
+  </group>
+
+  <group_state name="impedance_switch" group="both_arms">
+    <joint name="victor_left_arm_joint_1" value="-0.694"/>
+    <joint name="victor_left_arm_joint_2" value="0.140"/>
+    <joint name="victor_left_arm_joint_3" value="-0.229"/>
+    <joint name="victor_left_arm_joint_4" value="-1.110"/>
+    <joint name="victor_left_arm_joint_5" value="-0.512"/>
+    <joint name="victor_left_arm_joint_6" value="1.272"/>
+    <joint name="victor_left_arm_joint_7" value="0.077"/>
+    <joint name="victor_right_arm_joint_1" value="0.724"/>
+    <joint name="victor_right_arm_joint_2" value="0.451"/>
+    <joint name="victor_right_arm_joint_3" value="0.940"/>
+    <joint name="victor_right_arm_joint_4" value="-1.425"/>
+    <joint name="victor_right_arm_joint_5" value="0.472"/>
+    <joint name="victor_right_arm_joint_6" value="0.777"/>
+    <joint name="victor_right_arm_joint_7" value="-0.809"/>
+  </group_state>
+</robot>

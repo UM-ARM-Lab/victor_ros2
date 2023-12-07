@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+This launch file uses python because the order of launch matters, and some nodes need to be delayed.
+"""
+
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, RegisterEventHandler
 from launch.conditions import IfCondition, UnlessCondition
@@ -83,7 +87,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             'use_fake_hardware',
-            default_value='true',
+            default_value='false',
             description='Start robot with fake hardware mirroring command to its states.',
         )
     )
@@ -118,30 +122,9 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            'robot_ip',
-            default_value='192.170.10.2',
-            description='Robot IP of FRI interface',
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            'robot_port',
-            default_value='30200',
-            description='Robot port of FRI interface.',
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
             'command_interface',
             default_value='position',
             description='Robot command interface [position|velocity|effort].',
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            'base_frame_file',
-            default_value='base_frame.yaml',
-            description='Configuration file of robot base frame wrt World.',
         )
     )
 
@@ -157,11 +140,7 @@ def generate_launch_description():
     use_servoing = LaunchConfiguration('use_servoing')
     robot_controller = LaunchConfiguration('robot_controller')
     start_rviz = LaunchConfiguration('start_rviz')
-    robot_ip = LaunchConfiguration('robot_ip')
-    robot_port = LaunchConfiguration('robot_port')
-    initial_positions_file = LaunchConfiguration('initial_positions_file')
     command_interface = LaunchConfiguration('command_interface')
-    base_frame_file = LaunchConfiguration('base_frame_file')
     namespace = LaunchConfiguration('namespace')
 
     # Get URDF via xacro
@@ -195,7 +174,6 @@ def generate_launch_description():
             'description_file': description_file,
             'prefix': prefix,
             'start_rviz': start_rviz,
-            'base_frame_file': base_frame_file,
             'namespace': namespace,
             'use_sim': use_sim,
         }.items(),
@@ -213,7 +191,6 @@ def generate_launch_description():
             'description_package': description_package,
             'description_file': description_file,
             'prefix': prefix,
-            'base_frame_file': base_frame_file,
             'namespace': namespace,
         }.items(),
         condition=IfCondition(use_servoing),
@@ -288,14 +265,6 @@ def generate_launch_description():
                    [namespace, 'controller_manager']],
     )
 
-    external_torque_broadcaster_spawner = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['ets_state_broadcaster', '--controller-manager',
-                   [namespace, 'controller_manager']],
-        condition=UnlessCondition(use_sim),
-    )
-
     robot_controller_spawner = Node(
         package='controller_manager',
         executable='spawner',
@@ -347,7 +316,6 @@ def generate_launch_description():
         delay_joint_state_broadcaster_spawner_after_control_node,
         delay_joint_state_broadcaster_spawner_after_spawn_entity,
         delay_rviz_after_joint_state_broadcaster_spawner,
-        external_torque_broadcaster_spawner,
         delay_robot_controller_spawner_after_joint_state_broadcaster_spawner,
     ]
 

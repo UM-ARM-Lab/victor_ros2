@@ -26,16 +26,24 @@
 namespace semantic_components {
 class ExternalTorqueSensor : public SemanticComponentInterface<std_msgs::msg::Float64MultiArray> {
  public:
-  /// Constructor for iiwa ETS with 7 values
+  /// Constructor for iiwa ETS with 14 values
   explicit ExternalTorqueSensor(const std::string &name) : SemanticComponentInterface(name, 7) {
     // If ETS use standard names
-    interface_names_.emplace_back(name_ + "/" + "external_torque.joint_a1");
-    interface_names_.emplace_back(name_ + "/" + "external_torque.joint_a2");
-    interface_names_.emplace_back(name_ + "/" + "external_torque.joint_a3");
-    interface_names_.emplace_back(name_ + "/" + "external_torque.joint_a4");
-    interface_names_.emplace_back(name_ + "/" + "external_torque.joint_a5");
-    interface_names_.emplace_back(name_ + "/" + "external_torque.joint_a6");
-    interface_names_.emplace_back(name_ + "/" + "external_torque.joint_a7");
+    interface_names_.emplace_back(name_ + "/" + "external_torque.left_joint_a1");
+    interface_names_.emplace_back(name_ + "/" + "external_torque.left_joint_a2");
+    interface_names_.emplace_back(name_ + "/" + "external_torque.left_joint_a3");
+    interface_names_.emplace_back(name_ + "/" + "external_torque.left_joint_a4");
+    interface_names_.emplace_back(name_ + "/" + "external_torque.left_joint_a5");
+    interface_names_.emplace_back(name_ + "/" + "external_torque.left_joint_a6");
+    interface_names_.emplace_back(name_ + "/" + "external_torque.left_joint_a7");
+    interface_names_.emplace_back(name_ + "/" + "external_torque.right_joint_a1");
+    interface_names_.emplace_back(name_ + "/" + "external_torque.right_joint_a2");
+    interface_names_.emplace_back(name_ + "/" + "external_torque.right_joint_a3");
+    interface_names_.emplace_back(name_ + "/" + "external_torque.right_joint_a4");
+    interface_names_.emplace_back(name_ + "/" + "external_torque.right_joint_a5");
+    interface_names_.emplace_back(name_ + "/" + "external_torque.right_joint_a6");
+    interface_names_.emplace_back(name_ + "/" + "external_torque.right_joint_a7");
+
 
     // Set all interfaces existing
     std::fill(existing_axes_.begin(), existing_axes_.end(), true);
@@ -112,8 +120,8 @@ class ExternalTorqueSensor : public SemanticComponentInterface<std_msgs::msg::Fl
   }
 
  protected:
-  std::array<double, 7> torques_;
-  std::array<bool, 7> existing_axes_;
+  std::array<double, 14> torques_;
+  std::array<bool, 14> existing_axes_;
 };
 
 }  // namespace semantic_components

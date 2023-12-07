@@ -40,15 +40,6 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            'prefix',
-            default_value='""',
-            description='Prefix of the joint names, useful for multi-robot setup. \
-                         If changed than also joint names in the controllers \
-                         configuration have to be updated. Expected format "<prefix>/"',
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
             'namespace',
             default_value='/',
             description='Namespace of launched nodes, useful for multi-robot setup. \
@@ -65,13 +56,6 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            'base_frame_file',
-            default_value='base_frame.yaml',
-            description='Configuration file of robot base frame wrt World.',
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
             'use_sim',
             default_value='false',
             description='Start robot in Gazebo simulation.',
@@ -81,9 +65,7 @@ def generate_launch_description():
     # Initialize Arguments
     description_package = LaunchConfiguration('description_package')
     description_file = LaunchConfiguration('description_file')
-    prefix = LaunchConfiguration('prefix')
     start_rviz = LaunchConfiguration('start_rviz')
-    base_frame_file = LaunchConfiguration('base_frame_file')
     namespace = LaunchConfiguration('namespace')
     use_sim = LaunchConfiguration('use_sim')
 
@@ -95,12 +77,6 @@ def generate_launch_description():
             PathJoinSubstitution(
                 [FindPackageShare(description_package), 'urdf', description_file]
             ),
-            ' ',
-            'prefix:=',
-            prefix,
-            ' ',
-            'base_frame_file:=',
-            base_frame_file,
             ' ',
             'description_package:=',
             description_package,
@@ -123,9 +99,6 @@ def generate_launch_description():
             " ",
             "name:=",
             "victor",
-            " ",
-            "prefix:=",
-            prefix,
             " ",
             'description_package:=',
             description_package,
