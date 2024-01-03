@@ -15,8 +15,6 @@
             <joint name="${prefix}joint_a7" value="0"/>
         </group_state>
 
-        <virtual_joint child_link="${prefix}victor_base" name="virtual_joint" parent_frame="world" type="floating"/>
-
         <disable_collisions link1="${prefix}victor_base" link2="${prefix}link_0" reason="Adjacent"/>
         <disable_collisions link1="${prefix}victor_base" link2="${prefix}link_1" reason="Never"/>
         <disable_collisions link1="${prefix}victor_base" link2="${prefix}link_2" reason="Never"/>

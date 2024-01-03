@@ -1,0 +1,28 @@
+/**:
+  ros__parameters:
+    moveit_controller_manager:
+        moveit_simple_controller_manager/MoveItSimpleControllerManager
+
+    moveit_simple_controller_manager:
+      controller_names:
+        - victor_arm_controller
+
+      victor_arm_controller:
+        action_ns: follow_joint_trajectory
+        type: FollowJointTrajectory
+        default: true
+        joints:
+          - left_joint_a1
+          - left_joint_a2
+          - left_joint_a3
+          - left_joint_a4
+          - left_joint_a5
+          - left_joint_a6
+          - left_joint_a7
+          - right_joint_a1
+          - right_joint_a2
+          - right_joint_a3
+          - right_joint_a4
+          - right_joint_a5
+          - right_joint_a6
+          - right_joint_a7

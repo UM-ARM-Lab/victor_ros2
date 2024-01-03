@@ -1,83 +1,60 @@
-# IIWA_ROS2 #
-[![Licence](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![DOI](https://zenodo.org/badge/470651211.svg)](https://zenodo.org/badge/latestdoi/470651211)
-[![CI](https://github.com/ICube-Robotics/iiwa_ros2/actions/workflows/ci.yaml/badge.svg)](https://github.com/ICube-Robotics/iiwa_ros2/actions/workflows/ci.yaml)
+# victor_ros2
 
-ROS2 stack for KUKA iiwa 14 collaborative robots. This package contains launch and configuration setups to quickly get started using the driver.
+This repository is based on the one published by [ICube Robotics](https://github.com/ICube-Robotics/iiwa_ros2) and specialized for our dual-arm KUKA Robot.
+The specialization allows us to treat both arms as one HardwareInterface in ROS 2, which is simpler than running two separate control stacks.
+For instructions that describe how to setup or adapt to a new robot, it's probably easier and better to start from their original repo and not this one.
 
-## Features ##
-- integration with `ros2_control`
-- robot drivers for KUKA Fast Robot Interface (FRI) protocol for position, velocity and torque control
-- dedicated sensors and broadcasters to get data from the robot
-- dedicated controllers
-- integration with Gazebo
-- integration with Moveit2 (OMPL, PILZ and servo)
-
-## Available Packages in this Repository ##
-- `iiwa_bringup` - launch and run-time configurations
-- `iiwa_controllers` - implementation of dedicated controllers
-- `iiwa_description` - robot description and configuration files
-- `iiwa_hardware` - hardware interfaces for communication with the robot
-- `iiwa_moveit2` - some tools for Moveit2 integration
+## Description of Packages in this Repository ##
+- `victor_bringup` - launch and run-time configurations
+- `victor_controllers` - implementation of dedicated controllers
+- `victor_description` - robot description and configuration files
+- `victor_hardware` - hardware interfaces for communication with the robot
+- `victor_moveit2` - some tools for Moveit2 integration
 
 ## Getting Started
-***Required setup : Ubuntu 22.04 LTS***
 
-1.  Install `ros2` packages. The current development is based of `ros2 humble`. Installation steps are described [here](https://docs.ros.org/en/humble/Installation.html).
-2. Source your `ros2` environment:
-    ```shell
-    source /opt/ros/humble/setup.bash
-    ```
-    **NOTE**: The ros2 environment needs to be sources in every used terminal. If only one distribution of ros2 is used, it can be added to the `~/.bashrc` file.
-3. Install `colcon` and its extensions :
-    ```shell
-    sudo apt install python3-colcon-common-extensions
-     ```
-3. Create a new ros2 workspace:
-    ```shell
-    mkdir ~/ros2_ws/src
-    ```
-4. Pull relevant packages, install dependencies, compile, and source the workspace by using:
-    ```shell
-    cd ~/ros2_ws
-    git clone https://github.com/ICube-Robotics/iiwa_ros2.git src/iiwa_ros2
-    vcs import src < src/iiwa_ros2.repos
-    rosdep install --ignore-src --from-paths . -y -r
-    colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --symlink-install
-    source install/setup.bash
-    ```
-**NOTE:** The `iiwa_ros2.repos` file contains links to ros2 packages that need to be source-built to use their newest features.
+This section describes how to load and clone the code needed to run Victor.
 
-## Usage
+### Setup on the KUKA Cabinets
 
-:warning: **SAFETY FIRST**:warning:
-*An industrial robot is not a toy and you may harm yourself due to misuse. In general it is best practice to test your code at first in simulation and then in low speed (**T1**) mode. Before using the robot, make yourself familiar with the safety instructions provided by the KUKA manuals.*
+The "cabinets" are the giant computers that are connected to each KUKA arm via the thick grey cables.
+Each arm has its own cabinet, and each cabinet needs some code uploaded to it.
+To upload this code, you need to use the Sunrise Workbench, which is a program that only runs on Windows.
+The computer currently labeld "KUKA JAVA WIN7" has the workbench installed and setup.
+To set up on a new computer, you'd first need to install the Sunrise Workbench (contact Kuka for this), then clone the projects for the left and right arm.
+There are two separate projects because they need different IP addresses, which is a per-project setting and needs to be hard-coded.
+The rest of the code is identical.
 
-### On the Robot side:
-**Step 1:** The used drivers allow the communication with the KUKA *iiwa* robot using KUKA's **Fast Robot Interface (FRI)**. Therefore, the `Fast Robot Interface Extension` needs to be installed and configured on the robot.
+The projects can be found here:
 
-**HINT:** In the proposed default setup of this package, the robot and the control PC are communicating through FRI on the `KUKA Option Network Interface` (KONI) with the following setup:
-- Robot : `IP = 192.170.10.2`, `SubnetMask = FFFFFF00`
-- Control PC : `IP = 192.170.10.5`, `SubnetMask = FFFFFF00`
+ - https://github.com/UM-ARM-Lab/fri_left.git
+ - https://github.com/UM-ARM-Lab/fri_right.git
 
-For further instructions concerning the installation and setup of FRI, please refer to KUKA FRI documentation.
+You then need to click "synchronize" to send each project to the cabinet. Accept the dialogs and wait for it to finish, which may require the cabinet to reboot itself.
+On the pendant, you can now click "Applications" and you should see "iiwa_ros2" listed. If you start that, it will prompt you for which control mode you want (probably TORQUE).
+At this point the cabinet is listening for FRI commands other ethernet.
 
-**Step 2:** This step consists in installing the `iiwa_ros2.java` application from the `iiwa_sunrise` directory in the `application` package of your robot Sunrise Project. This application allows you to establish a communication with the control PC and initialize one of the following control modes:
-- `POSITION` - position and velocity commands can be passed to the robot and executed, the robot sends its current status
-- `TORQUE` - torque commands can be passed to the robot and executed, the robot sends its current status
-- `MONITORING` - no commands can be passed to the robot, the robot only sends its current status
+### Setup on the ROS control machine
 
-**NOTE:** Depending on you application, the following parameters need to be tuned in the application:
-- `INITIAL_POSITION` (default: same as `iiwa_description/config/initial_positions.yaml`) - the initial joint configuration of the robot/
-- `CLIENT_IP` (default: `192.170.10.5`) - IP of the control PC allowed to send data to the robot.
-- `TS` (default: 5ms) - Communication period. The robot throws an Error if no data received during the specified period.
+The kuka arms and any other grippers/cameras are controlled from a machine Ubuntu 22.04 with ROS 2 Humble.
+Start with a full ROS 2 setup including creating a workspace.
+Then, follow the steps below.
 
-**NOTE:** For torque mode, there has to be a command value at least all 5ms.
+### ROS Domain setup
+As by default ROS2 streams all data on the network, in order to avoid message interference, it is preferred to isolate the communications by defining domains per project/application. Please set the environment variable `ROS_DOMAIN_ID` to a unique number. Add your unique number to the [ROS_DOMAIN_IDs spreadsheet](https://docs.google.com/spreadsheets/d/1HmkQwCQ5SWt2rD-wZi9xUg-tqsc7yyP02LQC-5hyZx8).
 
+```
+# Probably want to put this in your `~/.bashrc` file
+export ROS_DOMAIN_ID= [your_domain_id]`
+```
 
-**Step 3:** To control the robot using `iiwa_ros2` execute the application on the robot and select the desired control mode.
+### Clone the repos
 
-**NOTE:** All security modes (T1, T2, AUTO) are supported.
+```
+git clone git@github.com:UM-ARM-Lab/victor_ros2.git
+git clone git@github.com:PeterMitrano/ros2_robotiq_3f_gripper.git
+git clone git@github.com:tylerjw/serial.git
+```
 
 ### On ROS2 side:
 The `iiwa_bringup` package contains 3 main launch files: 2 examples and the main driver launcher
@@ -86,8 +63,9 @@ The `iiwa_bringup` package contains 3 main launch files: 2 examples and the main
 - `iiwa.launch.py` - is the main launcher giving access to all feaures of the driver.
 
 The arguments for launch files can be listed using
+
 ```shell
-ros2 launch iiwa_bringup <launch_file_name>.launch.py --show-args
+ros2 launch victor_bringup <launch_file_name>.launch.py --show-args
 ```
 The most relevant arguments of `iiwa.launch.py` are:
 
@@ -103,51 +81,4 @@ The most relevant arguments of `iiwa.launch.py` are:
 - `use_servoing` (default: "false") - Start robot with Moveit2 servoing.
 - `robot_controller` (default: "iiwa_arm_controller") - Robot controller to start.
 - `start_rviz` (default: "true") - Start RViz2 automatically with this launch file.
-- `robot_ip` (default: "192.170.10.2") - Robot IP of FRI interface.
-- `robot_port` (default: "30200") - Robot port of FRI interface.
-- `initial_positions_file` (default: "initial_positions.yaml") - Configuration file of robot initial positions for simulation.
 - `command_interface` (default: "position") - Robot command interface [position|velocity|effort].
-- `base_frame_file` (default: "base_frame.yaml") - Configuration file of robot base frame wrt the World frame.
-
-As an example, to run the `velocity_controller` on the real hardware with default ip and port, run
-
-```shell
-ros2 launch iiwa_bringup iiwa.launch.py use_fake_hardware:="false" command_interface:="velocity" robot_controller:="velocity_controller"
-```
-
-**HINT**: list all loaded controllers using `ros2 control list_controllers` command.
-
-**NOTE**: The package can simulate hardware with the ros2_control `FakeSystem`. This is the default behavior. This emulator enables an environment for testing of "piping" of hardware and controllers, as well as testing robot's descriptions. For more details see ros2_control documentation for more details.
-
-### Example commands for setup testing
-1. Start the simulated hardware, in a sourced terminal run
-    ```shell
-    ros2 launch iiwa_bringup iiwa.launch.py
-    ```
-    add the parameter `use_fake_hardware:="false"` to control the real robot, or `use_sim:="true"` to start a simulated robot in Gazebo.
-2. Send joint trajectory goals to the hardware by using a demo node from [ros2_control_demos](https://github.com/ros-controls/ros2_control_demos) package by running
-    ```shell
-    ros2 launch iiwa_bringup iiwa_test_joint_trajectory_controller.launch.py
-    ```
-
-After a few seconds the robot should move.
-
-## Practical information
-### Domain setup
-As by default ROS2 streams all data on the network, in order to avoid message interference, it is preferred to isolate the communications by defining domains per project/application.
-
-To do so run `export ROS_DOMAIN_ID= [your_domain_id]`, with `[your_domain_id]` between 0 and 255.
-
-### Running with Gazebo
-In order for Gazebo to find the robot model from the `iiwa_ros2` stack it needs to be referenced in the `GAZEBO_MODEL_PATH` environment variable. To do so, run:
-```shell
-$ source /usr/share/gazebo/setup.sh
-$ export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:/path/to/iiwa_ros2
-```
-**NOTE**: If you encounter issues with spawning the robot to Gazebo making it crash, make sure your models are well referenced.
-## Contacts ##
-![icube](https://icube.unistra.fr/fileadmin/templates/DUN/icube/images/logo.png)
-
-[ICube Laboratory](https://icube.unistra.fr), [University of Strasbourg](https://www.unistra.fr/), France
-
-__Maciej Bednarczyk:__ [m.bednarczyk@unistra.fr](mailto:m.bednarczyk@unistra.fr), @github: [mcbed](mailto:macbednarczyk@gmail.com)

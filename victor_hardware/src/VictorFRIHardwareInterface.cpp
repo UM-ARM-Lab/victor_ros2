@@ -279,6 +279,10 @@ namespace victor_hardware
         internal_command_position = hw_states_position_;
       }
     }
+    // else
+    // {
+    //   RCLCPP_ERROR_STREAM(rclcpp::get_logger("VictorFRIHardwareInterface"),  "Not ready to read: " << left_read << " " << right_read << " <<<<<<<");
+    // }
 
     return hardware_interface::return_type::OK;
   }
