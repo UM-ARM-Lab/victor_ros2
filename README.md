@@ -79,6 +79,6 @@ The most relevant arguments of `iiwa.launch.py` are:
 - `use_fake_hardware` (default: "true") - Start robot with fake hardware mirroring command to its states.
 - `use_planning` (default: "false") - Start robot with Moveit2 `move_group` planning configuration for Pilz and OMPL.
 - `use_servoing` (default: "false") - Start robot with Moveit2 servoing.
-- `robot_controller` (default: "iiwa_arm_controller") - Robot controller to start.
+- `robot_controller` (default: "position_trajectory_controller") - Robot controller to start.
 - `start_rviz` (default: "true") - Start RViz2 automatically with this launch file.
 - `command_interface` (default: "position") - Robot command interface [position|velocity|effort].
