@@ -36,6 +36,8 @@
   <exec_depend>moveit_common</exec_depend>
   <exec_depend>moveit_core</exec_depend>
   <exec_depend>moveit_ros_visualization</exec_depend>
+  <!-- useful for sending commands to test the controllers, since the RQT Gui makes the arm vibrate??? -->
+  <exec_depend>ros2_controllers_test_nodes</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

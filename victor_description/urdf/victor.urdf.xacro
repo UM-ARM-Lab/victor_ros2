@@ -6,9 +6,9 @@
   
   <!-- These you probably don't want to change -->
   <xacro:arg name="robot_name" default="victor"/>
-  <xacro:arg name="left_robot_ip" default="10.10.10.12" />
+  <xacro:arg name="left_robot_ip" default="192.170.12.1" />
   <xacro:arg name="left_robot_port" default="30200" />
-  <xacro:arg name="right_robot_ip" default="10.10.10.11" />
+  <xacro:arg name="right_robot_ip" default="192.170.11.1" />
   <xacro:arg name="right_robot_port" default="30201" />
   <xacro:arg name="controllers_file" default="iiwa_controllers.yaml" />
 

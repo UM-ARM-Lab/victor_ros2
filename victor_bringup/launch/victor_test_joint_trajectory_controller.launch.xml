@@ -1,0 +1,5 @@
+<launch>
+    <node name="test_position_trajectory_controller" pkg="ros2_controllers_test_nodes" exec="publisher_joint_trajectory_controller">
+        <param from="$(find-pkg-share victor_bringup)/config/test_trajectory_config.yaml"/>
+    </node>
+</launch>

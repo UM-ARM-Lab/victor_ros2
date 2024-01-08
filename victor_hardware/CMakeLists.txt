@@ -82,7 +82,23 @@ ament_target_dependencies(
 )
 
 
-pluginlib_export_plugin_description_file(hardware_interface victor_hardware_interface_plugin.xml)
+# DEBUGGING FRI
+add_executable(TestFRI
+  src/TestFRI.cpp
+  ${FRI_SRC}
+  src/IRDFClient.cpp
+)
+target_include_directories(
+  TestFRI
+  PRIVATE
+  include
+  ${FRI_HEADER}
+)
+ament_target_dependencies(
+  TestFRI
+  Eigen3
+)
+
 
 # INSTALL
 install(

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-      <xacro:include filename="$(find victor_description)/ros2_control/iiwa.r2c_hardware.xacro"/>
+    <xacro:include filename="$(find victor_description)/ros2_control/iiwa.r2c_hardware.xacro"/>
 
     <xacro:macro name="victor_r2c_hardware" params="name command_interface left_robot_ip left_robot_port right_robot_ip right_robot_port use_sim:=^|false use_fake_hardware:=^|false">
         <ros2_control name="${name}" type="system">

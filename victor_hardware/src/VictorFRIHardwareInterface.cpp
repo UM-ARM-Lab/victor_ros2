@@ -1,4 +1,4 @@
-// Copyright 2022, ICube Laboratory, University of Strasbourg
+// Copyright 2023, ARMLab @ The University of Michigan
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,9 +12,93 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <poll.h>
+#include <malloc.h>
+#include <sched.h>
+#include <sys/resource.h>
+#include <sys/mman.h>
+
 #include "victor_hardware/VictorFRIHardwareInterface.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include <span>
+
+auto logger = rclcpp::get_logger("VictorFRIHardwareInterface");
+
+
+int set_thread_cpu_affinity(pid_t pid, uint32_t cpu_bit_mask)
+{
+  cpu_set_t set;
+  uint32_t cpu_cnt = 0U;
+  CPU_ZERO(&set);
+  while (cpu_bit_mask > 0U) {
+    if ((cpu_bit_mask & 0x1U) > 0) {
+      CPU_SET(cpu_cnt, &set);
+    }
+    cpu_bit_mask = (cpu_bit_mask >> 1U);
+    cpu_cnt++;
+  }
+  return sched_setaffinity(pid, sizeof(set), &set);
+}
+
+int set_this_thread_cpu_affinity(uint32_t cpu_bit_mask)
+{
+  return set_thread_cpu_affinity(getpid(), cpu_bit_mask);
+}
+
+void PrefaultAndLockProcessHeapMemory(int64_t process_memory);
+
+struct ProcessMemoryInformation {
+  int64_t hard_page_faults = 0;
+  int64_t soft_page_faults = 0;
+};
+
+/// Get relevant process memory information, namely the number of hard and soft
+/// page faults encountered by the current process.
+ProcessMemoryInformation GetCurrentProcessMemoryInformation();
+
+void PrefaultAndLockProcessHeapMemory(int64_t process_memory) {
+  // First, "lock" all current and future memory used by the process to prevent
+  // memory from being paged out.
+  if (mlockall(MCL_CURRENT | MCL_FUTURE) != 0) {
+    char* error_string = strerror(errno);
+    const std::string error_msg(error_string);
+    throw std::runtime_error(
+        "mlockall(MCL_CURRENT | MCL_FUTURE) failed: " + error_msg);
+  }
+  // Second, configure the behavior of the system allocator.
+  // Disable the return of memory to the OS by disabling heap trim caused by
+  // calls to free().
+  mallopt(M_TRIM_THRESHOLD, -1);
+  // Disable the use of mmap() for handling large allocations.
+  mallopt(M_MMAP_MAX, 0);
+  // Third, allocate all the desired additional memory.
+  uint8_t* allocated = static_cast<uint8_t*>(malloc(process_memory));
+  if (allocated == nullptr) {
+    throw std::runtime_error("Failed to allocate process memory");
+  }
+  // Fourth, walk through the allocated memory to page it all in.
+  for (int64_t idx = 0; idx < process_memory; idx += sysconf(_SC_PAGESIZE)) {
+    // Writes to this buffer will page it in.
+    allocated[idx] = 0x00;
+  }
+  // Fifth, free the memory we allocated. Because we disabled the return of
+  // memory to the OS, this memory will stay available and paged in.
+  free(allocated);
+}
+
+ProcessMemoryInformation GetCurrentProcessMemoryInformation() {
+  struct rusage our_rusage;
+  if (getrusage(RUSAGE_SELF, &our_rusage) != 0) {
+    char* error_string = strerror(errno);
+    const std::string error_msg(error_string);
+    throw std::runtime_error(
+        "getrusage(RUSAGE_SELF, &our_rusage) failed: " + error_msg);
+  }
+  ProcessMemoryInformation memory_info;
+  memory_info.hard_page_faults = our_rusage.ru_majflt;
+  memory_info.soft_page_faults = our_rusage.ru_minflt;
+  return memory_info;
+}
 
 namespace victor_hardware
 {
@@ -26,6 +110,27 @@ namespace victor_hardware
     {
       return CallbackReturn::ERROR;
     }
+
+    //Set up realtime priority. Based on: https://github.com/RobotLocomotion/drake-iiwa-driver/blob/master/kuka-driver/kuka_driver.cc
+
+    // // Lock memory to prevent the OS from paging us out.
+    // if (mlockall(MCL_CURRENT | MCL_FUTURE) != 0) {
+    //   perror("mlockall failed");
+    //   return CallbackReturn::ERROR;
+    // }
+    // RCLCPP_INFO(logger, "Locked memory to prevent paging out"); 
+
+    // // Set realtime priority.
+    // struct sched_param scheduler_options = {};
+    // // 90 is as high as you generally want to go on PREEMPT_RT machines.
+    // // Any higher than this and you will have higher priority than the kernel
+    // // threads that serve interrupts, and the system will stop responding.
+    // scheduler_options.sched_priority = 90;
+    // if (sched_setscheduler(0, SCHED_FIFO, &scheduler_options) != 0) {
+    //   perror("sched_setscheduler failed");
+    //   return CallbackReturn::ERROR;
+    // }
+    // RCLCPP_INFO(logger, "Got realtime priority");
 
     // This controller does all 14 joints, 7 on each arm. The ros2 control interface seems to require
     // that the positions/velocities/etc are all stored as contiguous arrays (i.e std::vector) so all
@@ -46,7 +151,7 @@ namespace victor_hardware
       if (joint.command_interfaces.size() != 1)
       {
         RCLCPP_FATAL(
-            rclcpp::get_logger("VictorFRIHardwareInterface"),
+            logger,
             "Joint '%s' has %li command interfaces found. 1 expected.", joint.name.c_str(),
             joint.command_interfaces.size());
         return CallbackReturn::ERROR;
@@ -60,7 +165,7 @@ namespace victor_hardware
             hw_command_mode_ != hardware_interface::HW_IF_EFFORT)
         {
           RCLCPP_FATAL(
-              rclcpp::get_logger("VictorFRIHardwareInterface"),
+              logger,
               "Joint '%s' have %s unknown command interfaces.", joint.name.c_str(),
               joint.command_interfaces[0].name.c_str());
           return CallbackReturn::ERROR;
@@ -70,7 +175,7 @@ namespace victor_hardware
       if (hw_command_mode_ != joint.command_interfaces[0].name)
       {
         RCLCPP_FATAL(
-            rclcpp::get_logger("VictorFRIHardwareInterface"),
+            logger,
             "Joint '%s' has %s command interfaces. Expected %s.", joint.name.c_str(),
             joint.command_interfaces[0].name.c_str(), hw_command_mode_.c_str());
         return CallbackReturn::ERROR;
@@ -79,7 +184,7 @@ namespace victor_hardware
       if (joint.state_interfaces.size() != 3)
       {
         RCLCPP_FATAL(
-            rclcpp::get_logger("VictorFRIHardwareInterface"),
+            logger,
             "Joint '%s' has %li state interface. 3 expected.", joint.name.c_str(),
             joint.state_interfaces.size());
         return CallbackReturn::ERROR;
@@ -88,7 +193,7 @@ namespace victor_hardware
       if (joint.state_interfaces[0].name != hardware_interface::HW_IF_POSITION)
       {
         RCLCPP_FATAL(
-            rclcpp::get_logger("VictorFRIHardwareInterface"),
+            logger,
             "Joint '%s' have %s state interface. '%s' expected.", joint.name.c_str(),
             joint.state_interfaces[0].name.c_str(), hardware_interface::HW_IF_POSITION);
         return CallbackReturn::ERROR;
@@ -96,7 +201,7 @@ namespace victor_hardware
       if (joint.state_interfaces[1].name != hardware_interface::HW_IF_VELOCITY)
       {
         RCLCPP_FATAL(
-            rclcpp::get_logger("VictorFRIHardwareInterface"),
+            logger,
             "Joint '%s' have %s state interface. '%s' expected.", joint.name.c_str(),
             joint.state_interfaces[0].name.c_str(), hardware_interface::HW_IF_VELOCITY);
         return CallbackReturn::ERROR;
@@ -104,7 +209,7 @@ namespace victor_hardware
       if (joint.state_interfaces[2].name != hardware_interface::HW_IF_EFFORT)
       {
         RCLCPP_FATAL(
-            rclcpp::get_logger("VictorFRIHardwareInterface"),
+            logger,
             "Joint '%s' have %s state interface. '%s' expected.", joint.name.c_str(),
             joint.state_interfaces[0].name.c_str(), hardware_interface::HW_IF_EFFORT);
         return CallbackReturn::ERROR;
@@ -177,7 +282,7 @@ namespace victor_hardware
   // ------------------------------------------------------------------------------------------
   CallbackReturn VictorFRIHardwareInterface::on_activate(const rclcpp_lifecycle::State & /* previous_state */)
   {
-    RCLCPP_INFO(rclcpp::get_logger("VictorFRIHardwareInterface"), "Starting ...please wait...");
+    RCLCPP_INFO(logger, "Starting ...please wait...");
 
     std::string left_ip = info_.hardware_parameters["left_robot_ip"];
     int left_port = stoi(info_.hardware_parameters["left_robot_port"]);
@@ -205,7 +310,6 @@ namespace victor_hardware
       }
     }
 
-    auto logger = rclcpp::get_logger("VictorFRIHardwareInterface");
     RCLCPP_INFO(logger, "===================================================================================");
     RCLCPP_INFO(logger, "Waiting to connect to FRI, please start the iiwa_ros2 application on BOTH pendants!");
     RCLCPP_INFO(logger, "===================================================================================");
@@ -215,19 +319,20 @@ namespace victor_hardware
     leftRobotClient_.connect(left_port, left_ip.c_str());
     rightRobotClient_.connect(right_port, right_ip.c_str());
 
+    RCLCPP_INFO(logger, "On Activate finished successfully");
+
     return CallbackReturn::SUCCESS;
   }
   // ------------------------------------------------------------------------------------------
   CallbackReturn VictorFRIHardwareInterface::on_deactivate(
       const rclcpp_lifecycle::State & /* previous_state */)
   {
-    RCLCPP_INFO(rclcpp::get_logger("VictorFRIHardwareInterface"), "Stopping ...please wait...");
+    RCLCPP_INFO(logger, "Stopping ...please wait...");
 
     leftRobotClient_.disconnect();
     rightRobotClient_.disconnect();
 
-    RCLCPP_INFO(
-        rclcpp::get_logger("VictorFRIHardwareInterface"), "System successfully stopped!");
+    RCLCPP_INFO(logger, "System successfully stopped!");
 
     return CallbackReturn::SUCCESS;
   }
