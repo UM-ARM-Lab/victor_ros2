@@ -240,7 +240,7 @@ bool IRDFClient::updateFromRobot()
    _size = _connection.receive(_data->receiveBuffer, FRI_MONITOR_MSG_MAX_SIZE);
    if (_size <= 0)
    { // TODO: _size == 0 -> connection closed (maybe go to IDLE instead of stopping?)
-      printf("Error: failed while trying to receive monitoring message!\n");
+      // printf("Error: failed while trying to receive monitoring message!\n");
       return false;
    }
 
@@ -325,7 +325,7 @@ bool IRDFClient::updateToRobot()
 
       if (!_connection.send(_data->sendBuffer, _size))
       {
-         printf("Error: failed while trying to send command message!\n");
+         // printf("Error: failed while trying to send command message!\n");
          return false;
       }
    }

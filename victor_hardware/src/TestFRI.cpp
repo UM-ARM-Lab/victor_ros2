@@ -106,27 +106,45 @@ int main() {
   // }
   // RCLCPP_INFO(logger, "Got realtime priority");
 
-  KUKA::FRI::IRDFClient client;
+  KUKA::FRI::IRDFClient left_client;
+  KUKA::FRI::IRDFClient right_client;
 
-  client.connect(30200, "192.170.12.1");
+  left_client.connect(30200, "192.170.12.1");
+  // right_client.connect(30201, "192.170.11.1");
   std::cout << "Connected" << std::endl;
-  client.setVelocityFilterCutOffFreq(40);
-  client.setTorqueFilterCutOffFreq(40);
+  left_client.setVelocityFilterCutOffFreq(40);
+  left_client.setTorqueFilterCutOffFreq(40);
+  // right_client.setVelocityFilterCutOffFreq(40);
+  // right_client.setTorqueFilterCutOffFreq(40);
 
   auto t = 0;
   auto const t0 = std::chrono::steady_clock::now();
   while (true) {
-    auto const ready = client.updateFromRobot();
-    auto const state = client.getCurrentControllerState();
-    auto const read = state != KUKA::FRI::IDLE && state != KUKA::FRI::MONITORING_WAIT;
-    auto const update_ok = client.updateToRobot();
+    auto const rw0 = std::chrono::high_resolution_clock::now();
+    auto const left_ready = left_client.updateFromRobot();
+    auto const rw1 = std::chrono::high_resolution_clock::now();
+    auto const left_update_ok = left_client.updateToRobot();
+    auto const rw2 = std::chrono::high_resolution_clock::now();
+    auto const rw_dt1 = std::chrono::duration_cast<std::chrono::microseconds>(rw1 - rw0);
+    auto const rw_dt2 = std::chrono::duration_cast<std::chrono::microseconds>(rw2 - rw1);
 
     auto const now = std::chrono::steady_clock::now();
     // print the time since the start in minutes, stop after 1 hour
     auto const dt_min = std::chrono::duration_cast<std::chrono::minutes>(now - t0);
 
-    if (t % 100 == 0) {
-      std::cout << dt_min.count() << " " << ready << " " << state << " " << update_ok << std::endl;
+    // usleep(3000);
+
+    if (t % 500 == 0) {
+      std::cout << t << " "
+                << "rw: dt 1 " << rw_dt1.count() << "us "
+                << "rw: dt 2 " << rw_dt2.count() << "us "
+                // << "total dt min: " << dt_min.count() << " "
+                // << "status: "
+                // << left_ready << " "
+                // << right_ready << " "
+                // << left_update_ok << " "
+                // << right_update_ok
+                << std::endl;
     }
 
     t += 1;
@@ -139,7 +157,8 @@ int main() {
 
   std::cout << "Disconnecting" << std::endl;
 
-  client.disconnect();
+  left_client.disconnect();
+  right_client.disconnect();
 
   std::cout << "Disconnected" << std::endl;
 

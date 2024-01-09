@@ -156,7 +156,7 @@ protected:
 
 private:
     /**
-     * @brief array of command wrenche for FRI
+     * @brief array of command wrench for FRI
      */
     double _wrench[WORLD_DOF];
     VectorNJd _prev_q;
